@@ -1,33 +1,33 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="A lean, read-only client for make.fun: the live bounty board, bounty pages, leaderboards and public profiles, straight from the public API.">
-  <title>make.fun — lean board</title>
-  <link rel="stylesheet" href="style.css">
-  <script type="module" src="app.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A fast, read-only frontend for make.fun: live bounty board, bounty pages, leaderboards and public profiles, straight from make.fun's public API.">
+<title>make.fun board — Limber Board</title>
+<link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <a class="skip" href="#view">Skip to content</a>
-  <header class="topbar">
-    <a class="brand" href="#/" aria-label="make.fun lean board — home">make<span class="brand-dot">·</span>fun <span class="brand-tag">lean board</span></a>
-    <nav aria-label="Sections">
+<a class="skip" href="#view">Skip to content</a>
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="#/" aria-label="Limber Board — home">Limber&nbsp;Board</a>
+    <nav aria-label="Main">
       <a href="#/" data-nav="board">Board</a>
-      <a href="#/bounty/makefun-frontend-01" data-nav="bounty">This bounty</a>
+      <a href="#/bounty/makefun-frontend-01" data-nav="bounty">Featured bounty</a>
+      <a href="#/bounty/makefun-frontend-01/leaderboard" data-nav="leaderboard">Leaderboard</a>
     </nav>
-    <form class="profile-lookup" id="profile-lookup" role="search" aria-label="Open a public profile">
-      <label for="handle-input">Profile</label>
-      <input id="handle-input" name="handle" type="search" placeholder="@handle" autocomplete="off" spellcheck="false" aria-label="Profile handle">
-      <button type="submit">Open</button>
+    <form class="profile-search" id="profile-form" role="search" action="#/profile/samz">
+      <label class="visually-hidden" for="profile-handle">Look up a make.fun profile</label>
+      <input id="profile-handle" name="handle" type="search" placeholder="@handle" autocomplete="off" spellcheck="false">
+      <button type="submit">Profile</button>
     </form>
-  </header>
-  <main id="view" aria-live="polite">
-    <p class="loading" role="status">Loading live data from make.fun…</p>
-    <noscript><p class="error">This client needs JavaScript: it fetches the live board from the make.fun public API in your browser.</p></noscript>
-  </main>
-  <footer>
-    <p>Read-only. No sign-in, no writes — every number on this page comes from <a href="https://make.fun/api/openapi.json">the public make.fun API</a> at load time.</p>
-  </footer>
+  </div>
+</header>
+<main id="view" class="wrap" aria-live="polite"></main>
+<footer class="wrap footer">
+  <p>Read-only. Data is live from <a href="https://make.fun/">make.fun</a>'s public API — no sign-in, nothing is written. Built by <a href="#/profile/samz">@samz</a> for the make.fun frontend bounty.</p>
+</footer>
+<script type="module" src="/main.js"></script>
 </body>
 </html>
