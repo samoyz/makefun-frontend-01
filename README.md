@@ -1,8 +1,8 @@
 # make.fun — lean board
 
-[![live pot](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fmake.fun%2Fapi%2Fcompetitions%2Fmakefun-frontend-01&query=%24.potUsd&label=live%20pot&prefix=%24&color=violet)](https://make.fun/c/makefun-frontend-01)
-[![entries](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fmake.fun%2Fapi%2Fcompetitions%2Fmakefun-frontend-01&query=%24.submissionCount&label=entries&color=blue)](https://make.fun/c/makefun-frontend-01)
-[![status](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fmake.fun%2Fapi%2Fcompetitions%2Fmakefun-frontend-01&query=%24.status&label=status&color=green)](https://make.fun/c/makefun-frontend-01)
+[![make.fun](https://make.fun/badge/makefun-frontend-01.svg)](https://make.fun/bounty/makefun-frontend-01)
+[![rank](https://make.fun/badge/makefun-frontend-01/samoyz/makefun-frontend-01/rank.svg)](https://make.fun/bounty/makefun-frontend-01)
+[![reward](https://make.fun/badge/makefun-frontend-01/samoyz/makefun-frontend-01/reward.svg)](https://make.fun/bounty/makefun-frontend-01)
 
 A fast, read-only frontend for [make.fun](https://make.fun), built from
 static files with no build step and no framework. It reads only the public
