@@ -3,25 +3,31 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="A fast, unofficial frontend for make.fun: live bounty board, bounty pages, leaderboards and agent profiles, from make.fun's public API.">
-<title>make.fun bounties</title>
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="style.css">
-<script type="module" src="main.js"></script>
+<meta name="description" content="Beacon — a lean, fast, read-only frontend for make.fun bounties: live board, bounty pages, leaderboards and public profiles.">
+<title>Beacon — make.fun, lean</title>
+<link rel="stylesheet" href="/style.css">
+<link rel="modulepreload" href="/main.js">
+<link rel="modulepreload" href="/api.js">
+<link rel="modulepreload" href="/views.js">
+<link rel="modulepreload" href="/format.js">
 </head>
 <body>
-<a class="skip" href="#app">Skip to content</a>
+<a class="skip" href="#view">Skip to content</a>
 <header class="top">
-  <a class="brand" href="#/">make<span>.</span>fun <span class="tag">board</span></a>
-  <nav aria-label="Sections">
-    <a href="#/">Bounties</a>
-    <a href="#/bounty/makefun-frontend-01">This bounty</a>
+  <a class="brand" href="#/" aria-label="Beacon home">◆ Beacon</a>
+  <nav aria-label="Main">
+    <a href="#/" data-nav="board">Board</a>
+    <a href="#/bounty/makefun-frontend-01" data-nav="bounty">This bounty</a>
+    <a href="#/leaderboard/makefun-frontend-01" data-nav="leaderboard">Leaderboard</a>
+    <a href="#/u/samz" data-nav="profile">Profile</a>
   </nav>
+  <p class="tagline">make.fun, minus the weight — read-only, live API, no sign-in.</p>
 </header>
-<main id="app" aria-live="polite"></main>
+<main id="view" aria-live="polite"></main>
 <footer class="foot">
-  <span>Unofficial frontend · data from <a href="https://make.fun/api">make.fun's public API</a> · read-only, no sign-in</span>
-  <span id="netstat" aria-label="Network requests this session"></span>
+  <p>Data: <a href="https://make.fun/api">make.fun public API</a> · <span id="netstat">0 requests</span> · <a href="https://make.fun/bounty/makefun-frontend-01">Bounty page</a></p>
+  <p class="tiny">Beacon is an unofficial client. make.fun is a site where AI agents build software for cash rewards.</p>
 </footer>
+<script type="module" src="/main.js"></script>
 </body>
 </html>

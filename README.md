@@ -1,38 +1,59 @@
-# makefun-frontend
+# Beacon — a lean make.fun frontend
 
-[![make.fun · makefun-frontend-01](https://make.fun/badge/makefun-frontend-01.svg)](https://make.fun/bounty/makefun-frontend-01?utm_source=github&utm_medium=readme&utm_campaign=makefun-frontend-01)
-[![rank](https://make.fun/badge/makefun-frontend-01/samoyz/makefun-frontend-01/rank.svg)](https://make.fun/bounty/makefun-frontend-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=makefun-frontend-01)
-[![reward](https://make.fun/badge/makefun-frontend-01/samoyz/makefun-frontend-01/reward.svg)](https://make.fun/bounty/makefun-frontend-01?utm_source=github&utm_medium=readme&utm_campaign=makefun-frontend-01)
+[![make.fun bounty](https://make.fun/badge/makefun-frontend-01.svg)](https://make.fun/bounty/makefun-frontend-01)
+[![rank](https://make.fun/badge/makefun-frontend-01/samoyz/makefun-frontend-01/rank.svg)](https://make.fun/bounty/makefun-frontend-01)
+[![reward](https://make.fun/badge/makefun-frontend-01/samoyz/makefun-frontend-01/reward.svg)](https://make.fun/bounty/makefun-frontend-01)
 
-A fast, unofficial frontend for make.fun — a static app with no build step that reads make.fun's public API alone. It shows the live bounty board (each bounty's live pot, entry fee, time left and entries), a bounty's page (summary, description, full rules, live rewards table with the fee split, dates, recent entries), that bounty's leaderboard (rank, win rate with interval, size, paginated), and an account's public profile (bio, avatar, GitHub, wallet, record, entries). Every surface has its own URL and is reachable by a link.
+**Beacon** is a fast, easy-to-use frontend for [make.fun](https://make.fun), built from
+static files with no build step. It reads make.fun's public API alone — read-only,
+no sign-in, no writes — and shows the four surfaces a visitor needs:
 
-## Why it is fast
+- **Board** (`#/`) — every live bounty with its live pot, entry fee, time left and
+  entry count. Type to filter, sort by pot / ending soonest / most entries.
+- **Bounty page** (`#/bounty/<slug>`) — summary, description, rules, the rewards
+  table with the live pot split, dates, and whether it still takes entries
+  (judged by its deadline, not its status alone).
+- **Leaderboard** (`#/leaderboard/<slug>`) — ranked entries with judge win rate,
+  90% interval and dossier size, paginated.
+- **Profile** (`#/u/<handle>`) — avatar, bio, record (entered / placed / won /
+  podiums / best place / prize money) and the account's entries.
 
-- **Tiny first load:** plain ES modules and one small stylesheet, no framework, no webfont. The leaderboard and profile views load on demand with a literal `import()`, so they never weigh down the first load.
-- **Cached API answers:** every response is cached in memory and localStorage and revalidated with its ETag (`If-None-Match`; the API's ETags are bound to the minute, so a revalidation inside the minute answers 304 and costs no body). Fresh answers are served with no request at all, and a failed request falls back to the last good answer. The footer shows the session's request count.
-- **Few requests a view:** the board is one request, a bounty page is one, a leaderboard is one. Times left tick every 30 s without a refetch, and the board's search and sort filter client-side.
+## Why it's fast
 
-## Ease of use
-
-- Responsive phone layout (tables stack into cards), keyboard access (real links, a skip link, visible focus, focus moves to the heading on navigation), and screen-reader access (semantic tables and headings, `aria-live` main region, labelled search).
-- Open/closed is decided by the deadline, not the status alone: a bounty past its deadline reads closed even while the API still lists it open.
+- No framework, no webfonts, no images on first load — one small stylesheet and
+  four ES modules (about 25 KB raw).
+- API answers are cached in memory and revalidated with `If-None-Match`
+  (a 304 costs nothing); going back to a view you just left costs zero requests.
+- Long lists are paginated; views update without rebuilding the page.
+- Responsive layout, keyboard access (`/` focuses the board filter, skip link,
+  focus moves to each view's heading) and screen-reader announcements.
 
 ## Run it
 
 ```sh
-node serve.ts
+node serve.ts            # serves app/ on http://localhost:8080
 ```
 
-Then open http://localhost:8080. Or serve `app/` with any static HTTP server.
+Open http://localhost:8080/ in a desktop browser. Every surface is reachable by
+its own URL (hash routes, listed above).
 
-## Hand it in
+## Hand in
 
 ```sh
 mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
 ```
 
-`main.ts` copies `app/` and `screenshots/` to the output directory and writes `dossier.json` with the vendored `buildDossier` library.
+`main.ts` copies `app/` and `screenshots/` to the output directory and writes
+`dossier.json` with `buildDossier` from `vendor/makefun-frontend.ts`.
 
----
+## Screenshots
 
-<sub>Entered on [make.fun](https://make.fun/?ref=samz&utm_source=github&utm_medium=readme&utm_campaign=makefun-frontend-01) · AI agents build software for cash rewards</sub>
+Taken with headless Chromium at 1280×800 on live make.fun data:
+
+1. `screenshots/1-board.jpg` — the board (`#/`)
+2. `screenshots/2-bounty.jpg` — this bounty's page (`#/bounty/makefun-frontend-01`)
+3. `screenshots/3-leaderboard.jpg` — this bounty's leaderboard (`#/leaderboard/makefun-frontend-01`)
+
+## License
+
+MIT — see [LICENSE](LICENSE).

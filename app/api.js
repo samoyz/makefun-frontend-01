@@ -1,98 +1,70 @@
-// make.fun's public API, read-only GETs, open to any origin (CORS).
-// Every answer is cached and revalidated with its ETag: the API sends ETags
-// bound to the minute, so an If-None-Match inside the same minute answers 304
-// and costs no body. A fresh answer (under 60 s old) is served without any
-// request at all; a stale one is revalidated, and a failed revalidation falls
-// back to the cached body. Counters feed the footer: requests sent, 304s, bytes.
+// Beacon API client: GET-only reads of the make.fun public API, with
+// ETag revalidation (a 304 costs nothing) and a short in-memory cache so
+// going back to a view you just left costs zero requests.
 
-const API = 'https://make.fun/api';
+const BASE = 'https://make.fun/api';
 const TTL_MS = 60_000;
 
-const memory = new Map(); // path -> { etag, body, at }
-let sent = 0;
-let served = 0;
-let notModified = 0;
-let bytesSaved = 0;
+// url -> { etag, body, at }
+const cache = new Map();
 
-function readStore(path) {
-  try {
-    const raw = localStorage.getItem(`mf:${path}`);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
+let requests = 0;
+let servedFromCache = 0;
+const listeners = new Set();
+
+export function onNetStats(fn) {
+  listeners.add(fn);
+  return () => listeners.delete(fn);
 }
 
-function writeStore(path, entry) {
-  try {
-    localStorage.setItem(`mf:${path}`, JSON.stringify(entry));
-  } catch {
-    // storage full or unavailable: memory cache still works
-  }
+function note() {
+  const s = { requests, servedFromCache };
+  for (const fn of listeners) fn(s);
 }
 
-function cached(path) {
-  return memory.get(path) ?? readStore(path);
-}
-
-export function netStats() {
-  return { sent, served, notModified, bytesSaved };
-}
-
-async function get(path) {
-  const hit = cached(path);
-  if (hit && Date.now() - hit.at < TTL_MS) {
-    served += 1;
+/** Fetch JSON from a path like `/competitions?status=open`. */
+export async function getJson(path) {
+  const url = BASE + path;
+  const hit = cache.get(url);
+  const fresh = hit && Date.now() - hit.at < TTL_MS;
+  if (fresh) {
+    servedFromCache++;
+    note();
     return hit.body;
   }
-
   const headers = {};
-  if (hit?.etag) headers['If-None-Match'] = hit.etag;
-  sent += 1;
-  let res;
-  try {
-    res = await fetch(API + path, { headers });
-  } catch (err) {
-    if (hit) {
-      served += 1;
-      return hit.body; // offline: show the last good answer
-    }
-    throw err;
-  }
+  if (hit && hit.etag) headers['If-None-Match'] = hit.etag;
+  requests++;
+  note();
+  const res = await fetch(url, { headers });
   if (res.status === 304 && hit) {
-    notModified += 1;
-    served += 1;
-    const fresh = { ...hit, at: Date.now() };
-    memory.set(path, fresh);
-    writeStore(path, fresh);
+    hit.at = Date.now();
+    servedFromCache++;
+    note();
     return hit.body;
   }
   if (!res.ok) {
-    if (hit) {
-      served += 1;
-      return hit.body;
-    }
-    const err = new Error(`make.fun answered ${res.status} for ${path}`);
+    const err = new Error(`make.fun API ${res.status} for ${path}`);
     err.status = res.status;
     throw err;
   }
   const body = await res.json();
-  const etag = res.headers.get('etag');
-  const entry = { etag, body, at: Date.now() };
-  if (hit?.body) bytesSaved += JSON.stringify(hit.body).length;
-  memory.set(path, entry);
-  writeStore(path, entry);
+  cache.set(url, { etag: res.headers.get('ETag'), body, at: Date.now() });
   return body;
 }
 
-/** The open bounties, newest activity first. */
-export const getBounties = () => get('/competitions?status=open&activity=times');
+export function boardUrl(limit = 100) {
+  return `/competitions?status=open&limit=${limit}`;
+}
 
-/** One bounty, by its slug. */
-export const getBounty = (slug) => get(`/competitions/${encodeURIComponent(slug)}`);
+export function bountyUrl(slug) {
+  return `/competitions/${encodeURIComponent(slug)}`;
+}
 
-/** A bounty's leaderboard (ranked entries with win rates). */
-export const getLeaderboard = (slug) => get(`/competitions/${encodeURIComponent(slug)}/leaderboard`);
+export function leaderboardUrl(slug) {
+  return `/competitions/${encodeURIComponent(slug)}/leaderboard`;
+}
 
-/** An account's public profile, by handle. */
-export const getProfile = (handle) => get(`/profiles/${encodeURIComponent(handle)}`);
+export function profileUrl(handle) {
+  return `/profiles/${encodeURIComponent(handle)}`;
+}
