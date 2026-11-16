@@ -1,0 +1,141 @@
+/* A lean stylesheet: system type, no webfont, one small file. */
+:root {
+  --ink: #1a1a1a;
+  --muted: #5b5b5b;
+  --line: #e3e3e3;
+  --link: #0b5cad;
+  --open: #0a7a2e;
+  --soon: #8a5a00;
+  --bg-badge: #eef6ee;
+  --bg-soon: #fff4d6;
+  --bg-closed: #f0f0f0;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0 auto;
+  max-width: 960px;
+  padding: 0 16px 48px;
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--ink);
+  background: #fff;
+}
+a { color: var(--link); }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 3px solid var(--link); outline-offset: 2px; }
+.skip {
+  position: absolute;
+  left: -999px;
+  top: 0;
+  background: #fff;
+  padding: 8px 12px;
+  z-index: 1;
+}
+.skip:focus { left: 8px; top: 8px; }
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  align-items: baseline;
+  padding: 16px 0 12px;
+  border-bottom: 1px solid var(--line);
+}
+.brand { font-weight: 700; font-size: 1.15em; color: var(--ink); text-decoration: none; }
+.brand span { color: var(--link); }
+.brand .tag { font-weight: 400; color: var(--muted); font-size: .8em; }
+.top nav { display: flex; gap: 16px; }
+h1 { font-size: 1.6em; line-height: 1.25; margin: .7em 0 .3em; }
+h1:focus { outline: none; }
+h2 { font-size: 1.25em; margin: 1.4em 0 .4em; }
+h3 { font-size: 1.1em; margin: 1.2em 0 .3em; }
+.lede { color: var(--muted); margin-top: 0; }
+.muted { color: var(--muted); font-size: .9em; }
+.crumb { margin: .8em 0 0; }
+.badge {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: .8em;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.badge.open { background: var(--bg-badge); color: var(--open); }
+.badge.soon { background: var(--bg-soon); color: var(--soon); }
+.badge.closed { background: var(--bg-closed); color: var(--muted); }
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 12px 0;
+  align-items: end;
+}
+.tools label { font-weight: 600; font-size: .9em; }
+.tools input, .tools select {
+  font: inherit;
+  padding: 6px 8px;
+  border: 1px solid #999;
+  border-radius: 6px;
+  background: #fff;
+  margin-left: 6px;
+}
+.tools input { min-width: 220px; }
+.tablewrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+th { font-size: .85em; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+th.num { text-align: right; }
+tbody tr:hover { background: #f7f9fc; }
+.cat { color: var(--muted); font-size: .85em; display: block; }
+.facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 6px 18px;
+  margin: 12px 0;
+}
+.facts dt { font-weight: 600; }
+.facts dd { margin: 0; }
+.prose { max-width: 68ch; }
+.prose p { margin: .5em 0; }
+.prose code { background: #f0f0f0; padding: 1px 4px; border-radius: 4px; font-size: .9em; }
+.rules { margin-top: 1em; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; }
+.rules summary { cursor: pointer; font-weight: 600; }
+.recent { list-style: none; padding: 0; }
+.recent li { padding: 6px 0; border-bottom: 1px solid var(--line); }
+.who { display: flex; gap: 16px; align-items: start; margin-top: 12px; }
+.who h1 { margin: 0; }
+.bigava { border-radius: 50%; flex: none; }
+.ava { border-radius: 50%; vertical-align: -6px; margin-right: 6px; }
+.agent { white-space: nowrap; }
+.pager { display: flex; gap: 16px; justify-content: center; margin: 16px 0; }
+.foot {
+  margin-top: 32px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: .85em;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  justify-content: space-between;
+}
+button {
+  font: inherit;
+  padding: 8px 16px;
+  border: 1px solid var(--link);
+  border-radius: 6px;
+  background: var(--link);
+  color: #fff;
+  cursor: pointer;
+}
+@media (max-width: 640px) {
+  body { font-size: 15px; }
+  table, tbody, tr, td { display: block; }
+  thead { display: none; }
+  tr { padding: 8px 0; border-bottom: 1px solid var(--line); }
+  td { border: 0; padding: 2px 0; }
+  td.num { text-align: left; }
+  td.t { font-size: 1.05em; }
+  .facts { grid-template-columns: 1fr; gap: 0; }
+  .facts dt { margin-top: 8px; }
+  .tools input { min-width: 0; flex: 1; }
+}
