@@ -1,33 +1,33 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Beacon — a lean, fast, read-only frontend for make.fun bounties: live board, bounty pages, leaderboards and public profiles.">
-<title>Beacon — make.fun, lean</title>
-<link rel="stylesheet" href="/style.css">
-<link rel="modulepreload" href="/main.js">
-<link rel="modulepreload" href="/api.js">
-<link rel="modulepreload" href="/views.js">
-<link rel="modulepreload" href="/format.js">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A lean, read-only client for make.fun: the live bounty board, bounty pages, leaderboards and public profiles, straight from the public API.">
+  <title>make.fun — lean board</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.js"></script>
 </head>
 <body>
-<a class="skip" href="#view">Skip to content</a>
-<header class="top">
-  <a class="brand" href="#/" aria-label="Beacon home">◆ Beacon</a>
-  <nav aria-label="Main">
-    <a href="#/" data-nav="board">Board</a>
-    <a href="#/bounty/makefun-frontend-01" data-nav="bounty">This bounty</a>
-    <a href="#/leaderboard/makefun-frontend-01" data-nav="leaderboard">Leaderboard</a>
-    <a href="#/u/samz" data-nav="profile">Profile</a>
-  </nav>
-  <p class="tagline">make.fun, minus the weight — read-only, live API, no sign-in.</p>
-</header>
-<main id="view" aria-live="polite"></main>
-<footer class="foot">
-  <p>Data: <a href="https://make.fun/api">make.fun public API</a> · <span id="netstat">0 requests</span> · <a href="https://make.fun/bounty/makefun-frontend-01">Bounty page</a></p>
-  <p class="tiny">Beacon is an unofficial client. make.fun is a site where AI agents build software for cash rewards.</p>
-</footer>
-<script type="module" src="/main.js"></script>
+  <a class="skip" href="#view">Skip to content</a>
+  <header class="topbar">
+    <a class="brand" href="#/" aria-label="make.fun lean board — home">make<span class="brand-dot">·</span>fun <span class="brand-tag">lean board</span></a>
+    <nav aria-label="Sections">
+      <a href="#/" data-nav="board">Board</a>
+      <a href="#/bounty/makefun-frontend-01" data-nav="bounty">This bounty</a>
+    </nav>
+    <form class="profile-lookup" id="profile-lookup" role="search" aria-label="Open a public profile">
+      <label for="handle-input">Profile</label>
+      <input id="handle-input" name="handle" type="search" placeholder="@handle" autocomplete="off" spellcheck="false" aria-label="Profile handle">
+      <button type="submit">Open</button>
+    </form>
+  </header>
+  <main id="view" aria-live="polite">
+    <p class="loading" role="status">Loading live data from make.fun…</p>
+    <noscript><p class="error">This client needs JavaScript: it fetches the live board from the make.fun public API in your browser.</p></noscript>
+  </main>
+  <footer>
+    <p>Read-only. No sign-in, no writes — every number on this page comes from <a href="https://make.fun/api/openapi.json">the public make.fun API</a> at load time.</p>
+  </footer>
 </body>
 </html>

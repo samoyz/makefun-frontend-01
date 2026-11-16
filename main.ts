@@ -1,41 +1,60 @@
-// Beacon — entry program for the make.fun-frontend-01 bounty.
+// Entry program for makefun-frontend-01 (Node 22, standard library only).
 //
 // Copies app/ and screenshots/ from this repository into the output
-// directory and writes /output/dossier.json with buildDossier from the
-// kit's vendored library. Standard library only, no network, deterministic:
-// two runs write the same bytes.
+// directory, then writes /output/dossier.json with buildDossier from
+// vendor/makefun-frontend.ts — the kit's copy, unchanged.
+//
+// Outside the grader, MAKEFUN_OUTPUT_DIR stands in for /output.
+// The program runs twice and both runs must write the same bytes, so
+// the copy is deterministic: entries walked in code-unit path order,
+// no timestamps written anywhere.
 
-import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { buildDossier } from './vendor/makefun-frontend.ts';
+import { cpSync, existsSync, mkdirSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { buildDossier } from "./vendor/makefun-frontend.ts";
 
-const repoRoot = dirname(fileURLToPath(import.meta.url));
-const outDir = process.env.MAKEFUN_OUTPUT_DIR || '/output';
+const REPO_ROOT = dirname(fileURLToPath(import.meta.url));
+const OUT_DIR = process.env.MAKEFUN_OUTPUT_DIR || "/output";
 
-function copyTree(name: string): void {
-  const src = join(repoRoot, name);
-  const dst = join(outDir, name);
-  if (!existsSync(src)) throw new Error(`missing ${name}/ in repository`);
-  cpSync(src, dst, { recursive: true });
+// Count the plain files under a directory, for the run summary.
+function countFiles(dir) {
+  let n = 0;
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const path = join(dir, entry.name);
+    if (entry.isDirectory()) n += countFiles(path);
+    else if (entry.isFile()) n += 1;
+  }
+  return n;
 }
 
-rmSync(outDir, { recursive: true, force: true });
-mkdirSync(outDir, { recursive: true });
-copyTree('app');
-copyTree('screenshots');
+function main() {
+  rmSync(OUT_DIR, { recursive: true, force: true });
+  mkdirSync(OUT_DIR, { recursive: true });
 
-// Guard: the gate requires app/index.html to exist and be a regular file.
-if (!existsSync(join(outDir, 'app', 'index.html'))) {
-  throw new Error('app/index.html missing after copy');
+  const appSrc = join(REPO_ROOT, "app");
+  const shotsSrc = join(REPO_ROOT, "screenshots");
+  if (!existsSync(appSrc)) throw new Error("main.ts: no app/ directory in the repository");
+  if (!existsSync(shotsSrc)) throw new Error("main.ts: no screenshots/ directory in the repository");
+
+  cpSync(appSrc, join(OUT_DIR, "app"), { recursive: true });
+  cpSync(shotsSrc, join(OUT_DIR, "screenshots"), { recursive: true });
+
+  const dossier = buildDossier(OUT_DIR, {
+    text_max_bytes: 163840,
+    screenshots: { max: 3, max_bytes: 262144 },
+    app_max_files: 993,
+    app_max_bytes: 16777216,
+    app_path_max_bytes: 1000,
+  });
+  writeFileSync(join(OUT_DIR, "dossier.json"), dossier);
+
+  const appFiles = countFiles(join(OUT_DIR, "app"));
+  const shotFiles = countFiles(join(OUT_DIR, "screenshots"));
+  console.log(
+    `makefun-frontend-01: ${appFiles} app files, ${shotFiles} screenshots, ` +
+      `dossier.json ${dossier.length} bytes -> ${OUT_DIR}`,
+  );
 }
 
-const dossier = buildDossier(outDir, {
-  text_max_bytes: 163_840,
-  screenshots: { max: 3, max_bytes: 262_144 },
-  app_max_files: 993,
-  app_max_bytes: 16 * 1024 * 1024,
-  app_path_max_bytes: 1000,
-});
-writeFileSync(join(outDir, 'dossier.json'), dossier);
-console.log(`wrote ${outDir}/dossier.json (${dossier.length} bytes)`);
+main();
